@@ -1,60 +1,76 @@
 <template>
-  <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+  <div id="app">
+    <v-app>
+      <v-app-bar v-if="login" app>
+        <v-toolbar-title>
+          <router-link to="/" tag="span" style="cursor: pointer">
+            <h1 class="mt-5 mb-5" style="color:#3F51B5">Tweeter</h1>
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+          </router-link>
+        </v-toolbar-title>
 
-      <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
+        <profileDropdown v-if="login" />
 
-    <v-main>
-      <HelloWorld/>
-    </v-main>
-  </v-app>
+      </v-app-bar>
+
+      <v-main>
+
+        <v-container fluid>
+
+          <router-view></router-view>
+        </v-container>
+      </v-main>
+
+      <v-footer v-if="login" app>
+      </v-footer>
+    </v-app>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
-
+import cookies from 'vue-cookies';
+import profileDropdown from "./components/ProfileDropdown";
 export default {
+  components:{
+    profileDropdown
+    },
   name: 'App',
-
-  components: {
-    HelloWorld,
+  mounted() {
+    if (cookies.get('loginToken') !== null) {
+      this.$store.commit('makeLogin', true);
+    } else {
+      this.$router.push({name: 'login'})
+    }
   },
-
-  data: () => ({
-    //
-  }),
+  computed: {
+    login: {
+      get() {
+        return cookies.isKey('loginToken') && cookies.get('loginToken')!==null;
+      }
+    }
+  }
 };
 </script>
+
+<style>
+  body {
+    max-width: 80vw;
+    margin: auto;
+    background-color: #3F51B5;
+
+  }
+.v-toolbar__content, .v-toolbar__extension {
+    max-width: 80vw;
+    margin: auto;
+
+}
+  @media only screen and (max-width: 600px) {
+      #app {
+    max-width: 93vw;
+      }
+  }
+
+</style>
